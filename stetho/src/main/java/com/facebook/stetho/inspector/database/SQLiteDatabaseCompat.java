@@ -10,7 +10,8 @@ package com.facebook.stetho.inspector.database;
 import android.annotation.TargetApi;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 /**
  * Compatibility layer which supports opening databases with WAL and foreign key support
@@ -31,10 +32,8 @@ public abstract class SQLiteDatabaseCompat {
   static {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       sInstance = new JellyBeanAndBeyondImpl();
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      sInstance = new HoneycombImpl();
     } else {
-      sInstance = new NoopImpl();
+      sInstance = new IceCreamSandwichImpl();
     }
   }
 
@@ -64,8 +63,8 @@ public abstract class SQLiteDatabaseCompat {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  private static class HoneycombImpl extends SQLiteDatabaseCompat {
+  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+  private static class IceCreamSandwichImpl extends SQLiteDatabaseCompat {
     @Override
     public int provideOpenFlags(@SQLiteOpenOptions int openOptions) {
       return 0;
@@ -83,14 +82,4 @@ public abstract class SQLiteDatabaseCompat {
     }
   }
 
-  private static class NoopImpl extends SQLiteDatabaseCompat {
-    @Override
-    public int provideOpenFlags(@SQLiteOpenOptions int openOptions) {
-      return 0;
-    }
-
-    @Override
-    public void enableFeatures(@SQLiteOpenOptions int openOptions, SQLiteDatabase db) {
-    }
-  }
 }
